@@ -7,7 +7,7 @@ Created on Tue Sep 11 11:46:09 2018
 
 import pygame, sys, time
 #variables needed. Delay, TXTsource and syllBonus most important inputs
-delay = 0.3
+delay = 0.4
 wordCount = 0
 BGcolor = (255,255,255)
 W = 900
