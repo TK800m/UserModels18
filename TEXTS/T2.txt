@@ -1,0 +1,137 @@
+via IM [12]. Overall, study results for these computer-based
+interruptibility indicators suggest that they can help increase
+awareness on the disruptiveness of interruptions, which could
+be a first good step as stated by Beyea[6]. However, the results
+also suggest that these approaches do not reduce in-person
+interruption costs, which is what the FlowLight is addressing.
+Since in-person interruptions are one of the top causes for
+interruptions in the workplace and their immediate nature
+makes them particularly disruptive [29], researchers found
+that knowledge workers use physical indicators, such as headphones
+or office doors to indicate interruptibility and reduce
+interruptions and distraction [29].
+Only few researchers examined indicators that are not just visible
+on a knowledge worker’s computer monitor. InterruptMe
+projects availability cues of possible contacts onto a wall at
+the time when the interrupter is about to initiate a communication
+[15, 14]. The MoodLight uses an ambient display
+connected to an electro-dermal activity (EDA) monitor that
+indicates the excitement level of one or two individuals [27].
+Bjelica et al. developed an automatic interruptibility indicator
+that displays the status through ambient lighting effects and
+found in a small and short study that the indicator reduced the
+number of interruptions [7]. The FlowLight presented in this
+paper uses a physical traffic-light like LED placed at the desk
+of each person, such that the person’s interruptibility status
+can be seen by anyone approaching. Thereby, our approach
+is more direct and prominent than subtle ambient lighting
+and different to previous research, our large-scale field study
+examines the long-term effects of such physical indicators.
+APPROACH AND IMPLEMENTATION
+The FlowLight consists of a computer application to automatically
+determine a user’s interruptibility state and a physical
+LED light to indicate this state to co-workers. The FlowLight
+was developed iteratively over more than a year and improved
+continuously based on feedback from a small developer team
+that we used for testing, and later on, also based on feedback
+from study participants.
+Physical LED Light. FlowLight uses a physical traffic-light
+like LED to indicate the interruptibility status to co-workers.
+This light has evolved throughout the pilots1. The first model,
+which was designed and soldered in-house, is shown in Figure
+1a. In Figure 1b the same model light is shown encased
+in plastic and deployed in an open office space. Finally, Figure
+1c shows the blink(1)2 LED light that we adopted to avoid
+installation issues with certain drivers immediately after the
+first major pilot, which was also the first of two pilots in India
+(denoted as India #1 in Figure 2). Typically, we mounted the
+LED light on a user’s cubical wall or outside a user’s office.
+The light uses different colors to indicate four states: Available
+as green, Busy as red, Do Not Disturb (DnD) as pulsating red,
+and Away as yellow. Note that these states and colors mimic
+the ones used by prominent instant messaging services, in
+particular the one used by the company under study Application. The application features three main components:
+a Tracker to capture events relevant for calculating the interruptibility
+state, a Status Analyzer to analyze the captured
+events and calculate the user’s interruptibility state on the fly,
+and a Status Manager to manage the user’s current status,
+propagating it to the LED light and other applications, in particular
+instant messaging (IM) clients. The application was
+implemented to be compatible with the Windows operating
+system, Skype for Business, an IM and video-conferencing
+system, and Office 365, a software suite that provides email
+and calendaring services, amongst others. We chose to tailor
+our application to these systems and applications due to the IT
+setup at the target company for our study.
+The Tracker logs a user’s mouse and keyboard interaction.
+In particular, it collects mouse clicks, movements as pixels
+moved, scrolling as pixels scrolled and keystrokes (without
+recording the specific key). This component also logs calendar
+events to determine meetings and the Skype status.
+The Status Analyzer uses the tracked keyboard and mouse
+events to calculate the user’s interruptibility status on the fly,
+i.e., whether the user is available, busy, highly busy (DnD)
+or away. The algorithms used to calculate the interruptibility
+status are described below.
+The Status Manager is notified by the Status Analyzer at
+every change in the user’s interruptibility, and then propagates
+the updated status to the physical LED light and the user’s
+presence status in Skype for Business. The presence status
+in Skype for Business can also be changed manually by the
+user, or automatically by the Office 365 calendar, in case a
+meeting is scheduled. In case the presence status is changed
+manually, the Status Manager updates the interruptibility state
+of the application and the physical LED light.
+Algorithms for Status Updates. Over the course of this study,
+we used three different algorithms to determine and update the
+interruptibility status automatically, improving them based on
+critical user feedback as discussed below.
+FlowTracker. This algorithm sums up the computer interaction
+in the past three minutes according to heuristic weights
+assigned to each type of event, which were tuned based on
+feedback from early alpha and beta users of the FlowLight.
+If the value of the sum is in between the top 9% and the top
+4% of their activity range—we captured averages over the
+past days—the user is considered busy. If it is within the top
+4%, the user is considered highly busy. In our first pilot study
+in Bangalore, India (India #1 in Figure 2), we used different
+thresholds at first, namely 13% and 5% based on a prior study
+that indicated that knowledge workers are not interruptible for
+approximately 18% of their day. However, several technical
+writers (and others) involved in that pilot gave strong feedback
+that the light switched to the busy state too easily, which is
+why we lowered the thresholds to the mentioned 9% and 4%.
+Smoothing. While the FlowTracker showed promise, many
+early users complained that it was too sensitive to certain input.
+For instance, a twenty second burst of typing may cause a user
+to temporarily be shown as busy. Therefore, the Smoothing
+algorithm marks users as busy if they were active in each of the
+last three minutes and exceeded a threshold of 100 combined
+mouse clicks and key presses in the recent past (between 4
+and 7 minutes ago). This algorithm reduces frequent changes
+by requiring over three minutes of activity to become busy
+and, once busy, by requiring only one above-threshold minute
+in the recent past to remain busy. To achieve the highly busy
+status, users had to be busy at the current point in time and
+had to be above-threshold for fifteen of the last thirty minutes.
+Smoothed FlowTracker. While the Smoothing algorithm leads
+to fewer status changes, since it relied on a static threshold
+(i.e., 100 combined mouse clicks and key presses), it did not
+adapt to individual users’ work patterns. For instance, designers
+working on drawings tended to use mouse clicks almost
+exclusively, which makes it difficult to exceed the threshold.
+Thus, we finally combined the FlowTracker algorithm with
+the Smoothing algorithm to achieve the advantages of both
+approaches. This algorithm, currently in use, operates as the
+Smoothing algorithm, but instead of using a static threshold, it
+utilizes the FlowTracker algorithm to determine above threshold
+values. This algorithm eliminated all of the most common
+complaints reported by pilot users. Further refinement of the
+algorithm is left for future work.
+Although our main intent was to use an algorithm to infer
+interruptibility, we offered participants a “Manual Only” mode
+since it was requested by some participants, especially those
+with management roles that needed to be available to others
+most of the time, and we noticed (and our study confirmed)
+that our algorithms might not be accurate for everyone or for
+all activities requiring focus, such as reading or thinking.
