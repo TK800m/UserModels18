@@ -88,12 +88,12 @@ while True:
 				objectTrackers[y] = objectTrackers[y-1] + getSize[0] + storage +10
 				#print(objectTrackers[y-1])
 				#print(objectTrackers[y]
-		objectDistance[4]=abs(objectTrackers[5]- objectTrackers[4])
-		objectDistance[3]=abs(objectTrackers[4]- objectTrackers[3])
-		objectDistance[2]=abs(objectTrackers[3]- objectTrackers[2])
-		objectDistance[1]=abs(objectTrackers[2]- objectTrackers[1])
-		objectDistance[0]=abs(objectTrackers[1]- objectTrackers[0])
-		print(objectDistance)
+		#objectDistance[4]=abs(objectTrackers[5]- objectTrackers[4])
+		#objectDistance[3]=abs(objectTrackers[4]- objectTrackers[3])
+		#objectDistance[2]=abs(objectTrackers[3]- objectTrackers[2])
+		#objectDistance[1]=abs(objectTrackers[2]- objectTrackers[1])
+		#objectDistance[0]=abs(objectTrackers[1]- objectTrackers[0])
+		#print(objectDistance)
 		
 
 	#object tracker 1 becomes 0 etc. new entry in objectTrackers[5] is i+1
