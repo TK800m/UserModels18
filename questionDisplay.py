@@ -3,7 +3,7 @@
 import pygame, sys, time, math, numpy
 
 pygame.init()
-width = 800
+width = 1200
 height = 600
 question_font = pygame.font.Font(None, 50)
 info_font = pygame.font.Font(None, 20)
