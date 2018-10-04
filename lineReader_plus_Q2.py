@@ -144,8 +144,7 @@ def makeTXTarray(Textfile):
 	data = open(Textfile, "r")
 	Arr =[]
 	for lines in data:
-		for words in lines.split():
-			words = [x.encode('utf-8') for x in words]		
+		for words in lines.split():		
 			Arr.append(words)
 
 	for dot in range(0,10):
