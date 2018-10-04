@@ -6,12 +6,12 @@ engine.runAndWait()
 import pygame, sys, time, math, numpy
 
 pygame.init()
-width = 800
+width = 1200
 height = 600
 myfont = pygame.font.Font(None, 90)
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Fastreading with Eyetracker")
-bg = pygame.image.load('background.png')
+bg = pygame.image.load('background2.png')
 ## initialize texts
 TXT1 = "TEXTS/mary.txt"
 TXT2 = "TEXTS/test.txt"
@@ -42,10 +42,10 @@ for lines in data:
 		Arr.append(words)
 
 ##setting starting position works!!
-objectTrackers = [0,1,2,3,4,5]
-objectDistance = [0,0,0,0,0]
+objectTrackers = [0,1,2,3,4,5,6,7]
+#objectDistance = [0,0,0,0,0,0,0]
 objectTrackers = numpy.array(objectTrackers)
-for i in range (0,6):
+for i in range (0,len(objectTrackers)):
 	if i == 0:
 		objectTrackers[i] = 800
 	else:
@@ -86,10 +86,10 @@ while True:
 
 	if objectTrackers[0] <= 0:
 		storage = abs(objectTrackers[0])
-		for y in range (0,6):
-			if y < 5:
+		for y in range (0,len(objectTrackers)):
+			if y < len(objectTrackers)-1:
 				objectTrackers[y] = objectTrackers[y+1]
-			elif y == 5:
+			elif y == len(objectTrackers)-1:
 				getSize = myfont.size(Arr[i+y])
 				objectTrackers[y] = objectTrackers[y-1] + getSize[0] + storage +10
 				#print(objectTrackers[y-1])
@@ -105,7 +105,7 @@ while True:
 	#object tracker 1 becomes 0 etc. new entry in objectTrackers[5] is i+1
 		i += 1
 
-	for x in range(0,6):
+	for x in range(0,len(objectTrackers)):
 		showWord(Arr[i+x], objectTrackers[x])
 	pygame.display.update()
 	pygame.display.flip()
