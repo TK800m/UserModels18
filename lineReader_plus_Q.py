@@ -1,6 +1,7 @@
 ##printing lines
-
+#from pylink import *
 import pygame, sys, time, math, numpy
+from pylink import *
 
 pygame.init()
 width = 1200
@@ -11,13 +12,31 @@ BLACK = 0,0,0
 GREY = 100,100,100
 WHITE = (255,255,255)
 myfont = pygame.font.Font(None, 90)
-question_font = pygame.font.Font(None, 50)
+question_font = pygame.font.Font(None, 30)
 answer_font = pygame.font.Font(None, 30)
 info_font = pygame.font.Font(None, 20)
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Fastreading with Eyetracker")
 bg = pygame.image.load('background2.png')
 testbg = pygame.image.load('testBG.png')
+##---------------------------------------------------------------------------------------------------------------------------------------------------------##
+#Initialize the EyeLink system, and open a link connection to the EyeLink tracker.
+#eyelinktracker = EyeLink()
+#pylink.openGraphics()
+# Check the display mode, create a full-screen window, and initialize the calibration system.
+
+#· Send any configuration commands to the EyeLink tracker to prepare it for the experiment
+#· Get an EDF file name, and open an EDF data file (stored on the eye tracker)
+#· Record one or more blocks of trials. Each block typically begins with tracker setup (camera setup
+#and calibration), and then several trials are run.
+#· Close the EDF data file. If desired, copy it via the link to the local computer.
+#· Close the window, and the link connection to the eye tracker.
+##---------------------------------------------------------------------------------------------------------------------------------------------------------##
+
+
+
+
+
 ## initialize texts
 class Texts:
 	def __init__(self, text, question,options, answer):
@@ -40,26 +59,26 @@ class Answer:
 T1 = Texts(1,2,3,4)
 T1.text = "TEXTS/TEST1.txt"
 T1.question = 'The claim that listening to Mozart makes you more intelligent led to... '
-T1.options = ['1: conclusions that turned out to be scientifically invalid.','2: a new appreciation of the benefits of classical music.','3:  over-excited reactions among people concerned with children.']
+T1.options = ['1: conclusions that turned out to be scientifically invalid.','2: a new appreciation of the benefits of classical music.','3:  over-excited reactions among people concerned with children.',"4: I do not know"]
 T1.answer = 3
 print(T1.options[2])
 
 T2 = Texts(1,2,3,4)
 T2.text = "TEXTS/TEST2.txt"
 T2.question = "In his research Dr Alfred Tomatis looked upon music as..."
-T2.options = ["1: a means of diagnosing mental disorders.", "2: a non-verbal way of communication.", "3: a sequence of sounds affecting the brain"]
+T2.options = ["1: a means of diagnosing mental disorders.", "2: a non-verbal way of communication.", "3: a sequence of sounds affecting the brain","4: I do not know"]
 T2.answer = 3
 
 T3 = Texts(1,2,3,4)
 T3.text = "TEXTS/TEST3.txt"
 T3.question = "What is the idea behind filtering out sounds of a certain frequency from Mozart's music?"
-T3.options = ["1: Some frequencies are more easily processed by the brain than others.", "2: Reducing the music's complexity makes it easier to appreciate.", "3:  Offering a limited sound spectrum makes it easier to concentrate."]
+T3.options = ["1: Some frequencies are more easily processed by the brain than others.", "2: Reducing the music's complexity makes it easier to appreciate.", "3:  Offering a limited sound spectrum makes it easier to concentrate.","4: I do not know"]
 T3.answer = 3
 
 T4 = Texts(1,2,3,4)
 T4.text = "TEXTS/TEST4.txt"
 T4.question = "The positive effect of Mozart's music on special needs children..."
-T4.options = ["1: only became apparent after some time.", "2: was discovered quite accidentally.", "3: confirmed earlier research findings."]
+T4.options = ["1: only became apparent after some time.", "2: was discovered quite accidentally.", "3: confirmed earlier research findings.","4: I do not know"]
 T4.answer = 2
 
 T5 = Texts(1,2,3,4)
@@ -96,17 +115,19 @@ buttH = 80;
 B1 = Button((width/2)-(buttW/2),200,buttW,buttH)
 B2 = Button(B1.locationX,B1.locationY+buttH+10,buttW,buttH)
 B3 = Button(B1.locationX,B2.locationY+buttH+10,buttW,buttH)
+B4 = Button(B1.locationX,B3.locationY+buttH+10,buttW,buttH)
 
 A1 = Answer((width/2),B1.locationY+10,currText.options[0])
 A2 = Answer((width/2),B2.locationY+10,currText.options[1])
 A3 = Answer((width/2),B3.locationY+10,currText.options[2])
+A4 = Answer((width/2),B4.locationY+10,currText.options[3])
 
 info = 'press the number corresponding to the correct answer..'
 
 data = open (T1.text, "r")
 ##add questions for texts
 
-word_speed = -20 # pixels 
+word_speed = -25 # pixels 
 basis_frame_time = 1.0 / FPS
 
 #showwords of linereader- and for questionscreen
@@ -139,6 +160,22 @@ def calcObjectTracker(Arr):
 			getSize = myfont.size(Arr[i-1])
 			objectTrackers[i] = objectTrackers[i-1]+ getSize[0] + 10
 	return(objectTrackers)
+
+#calculate LiveAVG
+def calcWIV(baseline, threshold):
+	pupilsize  = getEventDataFlags(currentTime())
+	pcps = (pupilsize-baseline)/baseline + 1000
+	average = 0
+	liveCount = 0
+
+	while currentTime < 10000:
+		average = average + pcps
+		liveCount += 1
+
+	LiveAVG= average/liveCount
+	threshold = 0.997
+	WIV = LiveAVG * threshold
+	return(WIV)
 ##array of all the words in the text works!!
 
 
@@ -158,14 +195,43 @@ def setToStart(object):
 (Arr, objectTrackers, i, count, countdown, start_time, question_screen, given_answer) = setToStart(currText)
 textCounter = 0
 while True:
+	#if this == startscreen:
+	#
+	## first show a start screen and calculate the baseline
+	# baseline = getEventDataFlags(currentTime(1000))
+
+
 	frame_duration = clock.tick(FPS)
 	sinceFPS = clock.get_time()
 	count += sinceFPS
+
+	#if answer == incorrect:
+	#because people were able to read, but just were wrong
+	#	word_speed = 3
+	#if answer == i dont know:
+	#because people weren't able to read it is worse than being wrong
+	#	wordspeed += 5
+	#else:
+	#	word_speed -= 1
+
+
+	#calculate PCPS
+
+
+
+
+
+	#calculate WIV
+
+	### check WIV if it is too high decrease speed
+	### if WIV is too low increas speed
+
 
 	for event in pygame.event.get():
 	  if event.type == pygame.QUIT:
 	    sys.exit()
 	  if event.type == pygame.KEYDOWN:
+	  	
 	      if event.key == pygame.K_UP:
 	      	word_speed -=1
 	      	print("Current speed is: "+ str(word_speed))
@@ -212,6 +278,16 @@ while True:
 	      				(Arr, objectTrackers, i, count, countdown, start_time, question_screen, given_answer) = setToStart(currText)
 	      			else:
 	      				sys.exit()
+	      	if event.key==pygame.K_4 or event.key==pygame.K_KP4:
+	      		given_answer = 4
+	      		if given_answer == currText.answer:
+	      			print("This is the correct answer: " + currText.options[3])
+	      			textCounter += 1
+	      			if textCounter < len(txtObj):
+	      				currText = txtObj[textCounter]
+	      				(Arr, objectTrackers, i, count, countdown, start_time, question_screen, given_answer) = setToStart(currText)
+	      			else:
+	      				sys.exit()
 	if question_screen == False:
 		# want to move the word over 600 pixels in 1 sec: 
 		# 600pix/sec and 60frame/sec ->
@@ -244,6 +320,7 @@ while True:
 		if countdown == 0:		
 			#At the end print out how many words read
 			end = "words read = " + str(i)
+			print(i)
 			WL = len(end)
 			getSize = myfont.size(end)
 			end = myfont.render(end,1,(0,0,0))
@@ -252,6 +329,7 @@ while True:
 			#Calc the time it took to reed the words and print it
 			totalTime = time.time()-start_time
 			print("%.2f" %totalTime)
+			print("WPM = "+ str((len(Arr)-10)/(totalTime/60)))
 			timed = "this took " + str("%.2f" %totalTime)+ "sec"
 			WL = len(timed)
 			getSize = myfont.size(timed)
@@ -279,8 +357,9 @@ while True:
 		pygame.draw.rect(screen, WHITE,(B3.locationX,B3.locationY,B3.buttW,B3.buttH));
 		showWordQ(A3.answer,answer_font, A3.locationX, A3.locationY)
 
+		pygame.draw.rect(screen, WHITE,(B4.locationX,B4.locationY,B4.buttW,B4.buttH));
+		showWordQ(A4.answer,answer_font, A4.locationX, A4.locationY)
+
 		
 	pygame.display.update()
 	pygame.display.flip()
-
-
