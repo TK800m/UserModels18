@@ -1,7 +1,6 @@
 import pylink as pl
-from pylink import getEYELINK
-import re
-import psychopy
+#import re
+#import psychopy
 import pygame
 import os
 
@@ -94,14 +93,16 @@ def end_eyelink():
 set_file_contents()
 
 #for each new person, do the following:
-getEYELINK().startRecording(1, 1, 1, 1)           #0 if successful. Takes 10-30ms for recording to begin
+pl.getEYELINK().startRecording(1, 1, 1, 1)           #0 if successful. Takes 10-30ms for recording to begin
 pl.beginRealTimeMode(100)               #sets highest system priority and waits 100ms
 
+import tempsolution
+
 #wait for sample data via link for max 1000 ms
-if not getEYELINK().waitForBlockStart(1000,1,0): #returns true if data available
+if not pl.getEYELINK().waitForBlockStart(1000,1,0): #returns true if data available
     end_recording()
     print ("ERROR: No link samples received!")
-    getEYELINK().sendMessage("TRIAL ERROR")
+    pl.getEYELINK().sendMessage("TRIAL ERROR")
     end_eyelink()
 
 
@@ -109,9 +110,8 @@ if not getEYELINK().waitForBlockStart(1000,1,0): #returns true if data available
 
 
 #Run LineReader
-os.system('source activate UMpy27')
-os.system('python /Users/apple/Documents/GitHub/UserModels18-mine/lineReader_plus_Q.py')
-
+#os.system('python /Users/apple/Documents/GitHub/UserModels18-mine/tempsolution.py')
+#tempsolution
 
 '''
 #Get eye used
